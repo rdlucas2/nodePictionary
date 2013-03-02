@@ -42,7 +42,7 @@ function initCanvas() {
     }
     context = canvas.getContext("2d");
 
-    $('#canvas').mousedown(function(e){
+    $('#canvas').on('mousedown touchstart dragdown draginit', function(e){
         x = e.pageX - this.offsetLeft;
         y = e.pageY - this.offsetTop;
         pressed = true;
@@ -52,18 +52,7 @@ function initCanvas() {
 //        redraw();
     });
 
-    $('#canvas').touchstart(function(e){
-        x = e.pageX - this.offsetLeft;
-        y = e.pageY - this.offsetTop;
-        pressed = true;
-        moves = {x:x,y:y,pressed:pressed}
-        socket.emit('drawStart', moves);
-        pressed = false;
-//        redraw();
-    });
-
-
-    $('#canvas').mousemove(function(e){
+    $('#canvas').on('mousemove dragmove touchmove', function(e){
         if(pressed){
             x = e.pageX - this.offsetLeft;
             y = e.pageY - this.offsetTop;
@@ -74,27 +63,7 @@ function initCanvas() {
         }
     });
 
-    $('#canvas').touchmove(function(e){
-        if(pressed){
-            x = e.pageX - this.offsetLeft;
-            y = e.pageY - this.offsetTop;
-            pressed = true;
-            moves = {x:x,y:y,pressed:pressed}
-            socket.emit('drawMove', moves);
-//        redraw();
-        }
-    });
-
-
-    $('#canvas').mouseup(function(e){
-        pressed = false;
-    });
-
-    $('#canvas').touchend(function(e){
-        pressed = false;
-    });
-
-    $('#canvas').mouseleave(function(e){
+    $('#canvas').on('dragend touchend mouseup mouseleave dragout', function(e){
         pressed = false;
     });
 
