@@ -21,15 +21,15 @@ server.error(function(err, req, res, next){
     if (err instanceof NotFound) {
         res.render('404.jade', { locals: { 
                   title : '404 - Not Found'
-                 ,description: ''
-                 ,author: ''
+                 ,description: 'Move along, nothing to see here'
+                 ,author: 'Ryan Lucas'
                  ,analyticssiteid: 'XXXXXXX' 
                 },status: 404 });
     } else {
         res.render('500.jade', { locals: { 
                   title : 'The Server Encountered an Error'
-                 ,description: ''
-                 ,author: ''
+                 ,description: 'I would do anything for love, but I won\'t do that'
+                 ,author: 'Ryan Lucas'
                  ,analyticssiteid: 'XXXXXXX'
                  ,error: err 
                 },status: 500 });
@@ -42,11 +42,6 @@ var io = io.listen(server);
 io.sockets.on('connection', function(socket){
   console.log('Client Connected');
 
-  socket.on('message', function(data){
-    socket.broadcast.emit('server_message',data);
-    socket.emit('server_message',data);
-  });
-
   socket.on('drawStart', function(data){
       socket.broadcast.emit('drawStarted',data);
       socket.emit('drawStarted',data);
@@ -56,6 +51,16 @@ io.sockets.on('connection', function(socket){
       socket.broadcast.emit('drawMoved',data);
       socket.emit('drawStarted',data);
   });
+
+    socket.on('colorChange', function(data){
+        socket.broadcast.emit('colorChanged',data);
+        socket.emit('colorChanged',data);
+    });
+
+    socket.on('sizeChange', function(data){
+        socket.broadcast.emit('sizeChanged',data);
+        socket.emit('sizeChanged',data);
+    });
 
   socket.on('disconnect', function(){
     console.log('Client Disconnected.');
@@ -72,9 +77,9 @@ io.sockets.on('connection', function(socket){
 server.get('/', function(req,res){
   res.render('index.jade', {
     locals : { 
-              title : 'Your Page Title'
-             ,description: 'Your Page Description'
-             ,author: 'Your Name'
+              title : 'Pictionary - with node.js, socket.io, and jquery'
+             ,description: 'Proof of concept for browser based Pictionary like game'
+             ,author: 'Ryan Lucas'
              ,analyticssiteid: 'XXXXXXX' 
             }
   });

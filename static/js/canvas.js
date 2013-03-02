@@ -9,15 +9,15 @@ var moves = {};
 var pressed;
 var x;
 var y;
-
+var fillColor = "#000000";
+var radius = 10;
+var options = {};
+var cssObject;
     var socket = io.connect();
 
     socket.on('drawStarted', function(data){
         moves = data;
-        x = moves['x'];
-        y = moves['y'];
         pressed = moves['pressed'];
-        console.log(data);
         redraw(moves);
     });
 
@@ -26,7 +26,6 @@ var y;
         x = moves['x'];
         y = moves['y'];
         pressed = moves['pressed'];
-        console.log(data);
         redraw(moves);
     });
 
@@ -34,8 +33,8 @@ var y;
 function initCanvas() {
     var canvasDiv = document.getElementById('canvas');
     canvas = document.createElement('canvas');
-    canvas.setAttribute('width', 200);
-    canvas.setAttribute('height', 200);
+    canvas.setAttribute('width', window.innerWidth);
+    canvas.setAttribute('height', window.innerHeight);
     canvas.setAttribute('id', 'canvas');
     canvasDiv.appendChild(canvas);
     if(typeof G_vmlCanvasManager != 'undefined') {
@@ -71,16 +70,41 @@ function initCanvas() {
     $('#canvas').mouseleave(function(e){
         pressed = false;
     });
-    redraw(moves);
+
+    $('.colorChange').click(function(e){
+        fillColor = $(this).children('span').text();
+        socket.emit('colorChange', fillColor);
+    });
+
+    socket.on('colorChanged', function(data){
+        console.log(data);
+        $('.colorChange').removeClass('selected');
+        $(".colorChange:contains('" + data + "')").addClass('selected');
+        fillColor = data;
+    });
+
+    $('.sizeChange').click(function(e){
+        radius = $(this).children('span').text();
+        socket.emit('sizeChange', radius);
+    });
+
+    socket.on('sizeChanged', function(data){
+        console.log(data);
+        $('.sizeChange').removeClass('selected');
+        $(".sizeChange:contains('" + data + "')").addClass('selected');
+        radius = data;
+    });
+
+        redraw(moves);
 }
 
 function redraw(moves){
     width = canvas.width;
     height = canvas.height;
-    context.fillStyle = "#000000"
+    context.fillStyle = fillColor;
     context.beginPath();
     context.moveTo(moves['x'], moves['y']);
-    context.arc(moves['x'], moves['y'], 5, 0, Math.PI * 2, false)
+    context.arc(moves['x'], moves['y'], radius, 0, Math.PI * 2, false);
     context.fill();
 }
 

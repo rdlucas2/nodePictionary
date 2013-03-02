@@ -1,11 +1,20 @@
 extends layout
 
 block content
-  div
-    <div id="canvas" style="width: 200px; height: 200px; background: #fff;"></div>
-    input#name(type='text')
-    a(id='sender')='Send a Message'
-    ul(id='receiver')
+  div#canvas
+
+  div#options
+    <h3>Options</h3>
+    <h4>Colors</h4>
+    ul#colors
+      li.colorChange.selected black <span class="hidden">#000</span>
+      li.colorChange red <span class="hidden">#F00</span>
+      li.colorChange white <span class="hidden">#FFF</span>
+    <h4>Sizes</h4>
+    ul#sizes
+      li.sizeChange.selected small <span class="hidden">10</span>
+      li.sizeChange medium <span class="hidden">20</span>
+      li.sizeChange large <span class="hidden">30</span>
 
 block footerScripts
     script(defer, src='js/canvas.js')
