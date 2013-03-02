@@ -46,10 +46,10 @@ function initCanvas() {
     $('#canvas').mousedown(function(e){
         x = e.pageX - this.offsetLeft;
         y = e.pageY - this.offsetTop;
-        pressed = false;
         pressed = true;
         moves = {x:x,y:y,pressed:pressed}
         socket.emit('drawStart', moves);
+        pressed = false;
 //        redraw();
     });
 
