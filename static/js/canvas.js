@@ -5,19 +5,29 @@
  */
 $(document).ready(function() {
 
-var moves = new Array();
+var moves = {};
 var pressed;
+var x;
+var y;
 
     var socket = io.connect();
 
     socket.on('drawStarted', function(data){
         moves = data;
-        redraw();
+        x = moves['x'];
+        y = moves['y'];
+        pressed = moves['pressed'];
+        console.log(data);
+        redraw(moves);
     });
 
     socket.on('drawMoved', function(data){
         moves = data;
-        redraw();
+        x = moves['x'];
+        y = moves['y'];
+        pressed = moves['pressed'];
+        console.log(data);
+        redraw(moves);
     });
 
 
@@ -34,19 +44,20 @@ function initCanvas() {
     context = canvas.getContext("2d");
 
     $('#canvas').mousedown(function(e){
-        pressed= true;
-        moves.push([e.pageX - this.offsetLeft,
-            e.pageY - this.offsetTop,
-            false]);
+        x = e.pageX - this.offsetLeft;
+        y = e.pageY - this.offsetTop;
+        pressed = true;
+        moves = {x:x,y:y,pressed:pressed}
         socket.emit('drawStart', moves);
 //        redraw();
     });
 
     $('#canvas').mousemove(function(e){
         if(pressed){
-            moves.push([e.pageX - this.offsetLeft,
-                e.pageY - this.offsetTop,
-                true]);
+            x = e.pageX - this.offsetLeft;
+            y = e.pageY - this.offsetTop;
+            pressed = true;
+            moves = {x:x,y:y,pressed:pressed}
             socket.emit('drawMove', moves);
 //        redraw();
         }
@@ -59,28 +70,17 @@ function initCanvas() {
     $('#canvas').mouseleave(function(e){
         pressed = false;
     });
-    redraw();
+    redraw(moves);
 }
 
-function redraw(){
-    canvas.width = canvas.width;
-
-    context.strokeStyle = "#0000a0";
-    context.lineJoin = "round";
-    context.lineWidth = 6;
-
-    for(var i=0; i < moves.length; i++)
-    {
-        context.beginPath();
-        if(moves[i][2] && i){
-            context.moveTo(moves[i-1][0], moves[i-1][1]);
-        }else{
-            context.moveTo(moves[i][0], moves[i][1]);
-        }
-        context.lineTo(moves[i][0], moves[i][1]);
-        context.closePath();
-        context.stroke();
-    }
+function redraw(moves){
+    width = canvas.width;
+    height = canvas.height;
+    context.fillStyle = "#000000"
+    context.beginPath();
+    context.moveTo(moves['x'], moves['y']);
+    context.arc(moves['x'], moves['y'], 5, 0, Math.PI * 2, false)
+    context.fill();
 }
 
 $('body').bind('onload', initCanvas());
