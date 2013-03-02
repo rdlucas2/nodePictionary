@@ -52,6 +52,17 @@ function initCanvas() {
 //        redraw();
     });
 
+    $('#canvas').touchstart(function(e){
+        x = e.pageX - this.offsetLeft;
+        y = e.pageY - this.offsetTop;
+        pressed = true;
+        moves = {x:x,y:y,pressed:pressed}
+        socket.emit('drawStart', moves);
+        pressed = false;
+//        redraw();
+    });
+
+
     $('#canvas').mousemove(function(e){
         if(pressed){
             x = e.pageX - this.offsetLeft;
@@ -63,7 +74,23 @@ function initCanvas() {
         }
     });
 
+    $('#canvas').touchmove(function(e){
+        if(pressed){
+            x = e.pageX - this.offsetLeft;
+            y = e.pageY - this.offsetTop;
+            pressed = true;
+            moves = {x:x,y:y,pressed:pressed}
+            socket.emit('drawMove', moves);
+//        redraw();
+        }
+    });
+
+
     $('#canvas').mouseup(function(e){
+        pressed = false;
+    });
+
+    $('#canvas').touchend(function(e){
         pressed = false;
     });
 
