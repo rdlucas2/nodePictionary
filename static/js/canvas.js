@@ -11,8 +11,13 @@ var x;
 var y;
 var fillColor = "#000000";
 var radius = 10;
-var options = {};
-var cssObject;
+
+    // prevent elastic scrolling
+    document.body.addEventListener('touchmove',function(event){
+        event.preventDefault();
+    },false);	// end body:touchmove
+
+
     var socket = io.connect();
 
     socket.on('drawStarted', function(data){
@@ -42,28 +47,36 @@ function initCanvas() {
     }
     context = canvas.getContext("2d");
 
-    $('#canvas').on('mousedown touchstart dragdown draginit', function(e){
+    $('#canvas').bind('mousedown touchstart dragdown draginit', function(e){
+        e.preventDefault;
         x = e.pageX - this.offsetLeft;
         y = e.pageY - this.offsetTop;
+        if('ontouchstart' in window == true){
+            x = event.targetTouches[0].pageX;
+            y = event.targetTouches[0].pageY;
+        }
         pressed = true;
         moves = {x:x,y:y,pressed:pressed}
         socket.emit('drawStart', moves);
         pressed = false;
-//        redraw();
     });
 
-    $('#canvas').on('mousemove dragmove touchmove', function(e){
+    $('#canvas').bind('mousemove dragmove touchmove', function(e){
+        e.preventDefault;
         if(pressed){
             x = e.pageX - this.offsetLeft;
             y = e.pageY - this.offsetTop;
+            if('ontouchstart' in window == true){
+                x = event.targetTouches[0].pageX;
+                y = event.targetTouches[0].pageY;
+            }
             pressed = true;
             moves = {x:x,y:y,pressed:pressed}
             socket.emit('drawMove', moves);
-//        redraw();
         }
     });
 
-    $('#canvas').on('dragend touchend mouseup mouseleave dragout', function(e){
+    $('#canvas').bind('dragend touchend mouseup mouseleave dragout', function(e){
         pressed = false;
     });
 
