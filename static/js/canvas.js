@@ -8,13 +8,14 @@ $(document).ready(function() {
     //Initialize Variables
     var socket = io.connect();
     var moves = {};
-    var pressed;
+    var pressed = false;
     var x;
     var y;
     var prevx;
     var prevy;
     var fillColor = "#000000";
     var radius = 10;
+    console.log(pressed);
 
     // prevent elastic scrolling on mobile/touch
     document.body.addEventListener('touchmove',function(event){
@@ -36,7 +37,8 @@ $(document).ready(function() {
     }
 
     function draw(moves){
-        if(moves['pressed']){
+        console.log(pressed);
+        if(pressed){
             context.strokeStyle = fillColor;
             context.lineWidth = radius;
             context.lineCap = 'round';
@@ -51,7 +53,7 @@ $(document).ready(function() {
             context.lineTo(moves['x'], moves['y']);
         context.stroke();
         prevx = moves['x'];
-         prevy = moves['y'];
+        prevy = moves['y'];
         }
     }
 
@@ -78,28 +80,44 @@ $(document).ready(function() {
             y = event.targetTouches[0].pageY;
         }
         pressed = true;
-        moves = {x:x,y:y,pressed:pressed}
+        console.log(pressed);
+        socket.emit('pressStatus', pressed)
         prevx = x;
         prevy = y;
+        moves = {x:x,y:y,prevx:prevx,prevy:prevy}
         socket.emit('drawStart', moves);
     });
 
     $('#canvas').bind('mousemove touchmove', function(e){
         e.preventDefault;
+        if(pressed) {
             x = e.pageX - this.offsetLeft;
             y = e.pageY - this.offsetTop;
             if('ontouchstart' in window == true){
                 x = event.targetTouches[0].pageX;
                 y = event.targetTouches[0].pageY;
             }
-            moves = {x:x,y:y,pressed:pressed}
+            moves = {x:x,y:y,pressed:pressed};
             socket.emit('drawMove', moves);
+        }
     });
 
     //stop drawing when your finger leaves or the mouse is up (or out of bounds)
     $('#canvas').bind('touchend mouseup mouseleave', function(e){
         pressed = false;
+        socket.emit('pressStatus', pressed);
+        console.log(pressed);
     });
+
+    //get pressed status for everyone (Someone is or isn't drawing)
+    socket.on('pressed', function(data){
+        console.log(pressed);
+        console.log(data);
+        prevx = null;
+        prevy = null;
+        pressed = data;
+    });
+
     //******************************************************************************************
 
     //OPTIONS - color, size

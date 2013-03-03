@@ -52,15 +52,20 @@ io.sockets.on('connection', function(socket){
       socket.emit('drawStarted',data);
   });
 
-    socket.on('colorChange', function(data){
-        socket.broadcast.emit('colorChanged',data);
-        socket.emit('colorChanged',data);
-    });
+  socket.on('pressStatus', function(data){
+     socket.broadcast.emit('pressed', data);
+     socket.emit('pressed', data);
+  });
 
-    socket.on('sizeChange', function(data){
-        socket.broadcast.emit('sizeChanged',data);
-        socket.emit('sizeChanged',data);
-    });
+  socket.on('colorChange', function(data){
+      socket.broadcast.emit('colorChanged',data);
+      socket.emit('colorChanged',data);
+  });
+
+  socket.on('sizeChange', function(data){
+      socket.broadcast.emit('sizeChanged',data);
+      socket.emit('sizeChanged',data);
+  });
 
   socket.on('disconnect', function(){
     console.log('Client Disconnected.');
