@@ -46,7 +46,7 @@ $(document).ready(function() {
     }
 
     $('body').bind('onload', initCanvas());
-    //**********************************************************************************
+    //************************************************************************************
 
     //RECEIVE DRAWING INFORMATION TO DISPLAY ON ALL CLIENTS
     socket.on('drawStarted', function(data){
