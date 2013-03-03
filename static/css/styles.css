@@ -8,6 +8,9 @@ html, body {
     position: absolute;
     right:0;
     top:0;
+    background: #FFF;
+    border-left: 1px solid #000;
+    border-bottom: 1px solid #000;
 }
 
 .hidden {
@@ -16,4 +19,10 @@ html, body {
 
 .selected {
     border:1px solid #000;
+}
+
+#sizeValue {
+    list-style:none;
+    text-align:center;
+    padding-right:15px
 }

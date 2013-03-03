@@ -10,11 +10,11 @@ block content
       li.colorChange.selected black <span class="hidden">#000</span>
       li.colorChange red <span class="hidden">#F00</span>
       li.colorChange white <span class="hidden">#FFF</span>
-    <h4>Sizes</h4>
-    ul#sizes
-      li.sizeChange.selected small <span class="hidden">10</span>
-      li.sizeChange medium <span class="hidden">20</span>
-      li.sizeChange large <span class="hidden">30</span>
+    <h4>Line Thickness</h4>
+    ul#size
+      li <input id="sizeSlider" type="range" min="1" max="100" value="10" />
+      <li id="sizeValue">10</li>
 
 block footerScripts
     script(defer, src='js/canvas.js')
+    script(defer, src='js/slider.js')

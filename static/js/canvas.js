@@ -11,6 +11,8 @@ $(document).ready(function() {
     var pressed;
     var x;
     var y;
+    var prevx;
+    var prevy;
     var fillColor = "#000000";
     var radius = 10;
 
@@ -31,18 +33,26 @@ $(document).ready(function() {
             canvas = G_vmlCanvasManager.initElement(canvas);
         }
         context = canvas.getContext("2d");
-
-        redraw(moves);
     }
 
-    function redraw(moves){
-        width = canvas.width;
-        height = canvas.height;
-        context.fillStyle = fillColor;
-        context.beginPath();
-        context.moveTo(moves['x'], moves['y']);
-        context.arc(moves['x'], moves['y'], radius, 0, Math.PI * 2, false);
-        context.fill();
+    function draw(moves){
+        if(moves['pressed']){
+            context.strokeStyle = fillColor;
+            context.lineWidth = radius;
+            context.lineCap = 'round';
+            context.fillStyle = fillColor;
+            context.beginPath();
+            if(prevx != null) {
+                context.moveTo(prevx, prevy);
+            }
+            else {
+            context.moveTo(moves['x'], moves['y']);
+            }
+            context.lineTo(moves['x'], moves['y']);
+        context.stroke();
+        prevx = moves['x'];
+         prevy = moves['y'];
+        }
     }
 
     $('body').bind('onload', initCanvas());
@@ -50,22 +60,16 @@ $(document).ready(function() {
 
     //RECEIVE DRAWING INFORMATION TO DISPLAY ON ALL CLIENTS
     socket.on('drawStarted', function(data){
-        moves = data;
-        pressed = moves['pressed'];
-        redraw(moves);
+        draw(data);
     });
 
     socket.on('drawMoved', function(data){
-        moves = data;
-        x = moves['x'];
-        y = moves['y'];
-        pressed = moves['pressed'];
-        redraw(moves);
+        draw(data);
     });
     //******************************************************
 
     //WHEN THE DRAWING BEGINS AND THE MOUSE/TOUCH IS ACTIVE, SEND THE INFORMATION TO THE SERVER
-    $('#canvas').bind('mousedown touchstart dragdown draginit', function(e){
+    $('#canvas').bind('mousedown touchstart', function(e){
         e.preventDefault;
         x = e.pageX - this.offsetLeft;
         y = e.pageY - this.offsetTop;
@@ -75,27 +79,25 @@ $(document).ready(function() {
         }
         pressed = true;
         moves = {x:x,y:y,pressed:pressed}
+        prevx = x;
+        prevy = y;
         socket.emit('drawStart', moves);
-        pressed = false;
     });
 
-    $('#canvas').bind('mousemove dragmove touchmove', function(e){
+    $('#canvas').bind('mousemove touchmove', function(e){
         e.preventDefault;
-        if(pressed){
             x = e.pageX - this.offsetLeft;
             y = e.pageY - this.offsetTop;
             if('ontouchstart' in window == true){
                 x = event.targetTouches[0].pageX;
                 y = event.targetTouches[0].pageY;
             }
-            pressed = true;
             moves = {x:x,y:y,pressed:pressed}
             socket.emit('drawMove', moves);
-        }
     });
 
     //stop drawing when your finger leaves or the mouse is up (or out of bounds)
-    $('#canvas').bind('dragend touchend mouseup mouseleave dragout', function(e){
+    $('#canvas').bind('touchend mouseup mouseleave', function(e){
         pressed = false;
     });
     //******************************************************************************************
@@ -112,14 +114,14 @@ $(document).ready(function() {
         fillColor = data;
     });
 
-    $('.sizeChange').click(function(e){
-        radius = $(this).children('span').text();
+    $('#sizeSlider').on('mouseup', function(e){
+        radius = $('#sizeValue').text();
         socket.emit('sizeChange', radius);
     });
 
     socket.on('sizeChanged', function(data){
-        $('.sizeChange').removeClass('selected');
-        $(".sizeChange:contains('" + data + "')").addClass('selected');
+        $('#sizeSlider').val(data);
+        $("#sizeValue").text(data);
         radius = data;
     });
     //******************************************************************************************
