@@ -59,7 +59,7 @@
       <file leaf-file-name="canvas.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/static/js/canvas.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="37" selection-start="340" selection-end="340" vertical-scroll-proportion="-0.84070796">
+            <state line="38" column="29" selection-start="1086" selection-end="1086" vertical-scroll-proportion="0.6902655">
               <folding />
             </state>
           </provider>
@@ -474,7 +474,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/static/js/canvas.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="37" selection-start="340" selection-end="340" vertical-scroll-proportion="-0.84070796">
+        <state line="38" column="29" selection-start="1086" selection-end="1086" vertical-scroll-proportion="0.6902655">
           <folding />
         </state>
       </provider>
