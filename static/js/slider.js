@@ -169,6 +169,7 @@ document.getElementById('sizeSlider').onchange();
             });
         }).observe(slider, options);
 
+        slider.addEventListener('touchstart', onDragStart, true);
         slider.addEventListener('mousedown', onDragStart, true);
         slider.addEventListener('keydown', onKeyDown, true);
         slider.addEventListener('focus', onFocus, true);
@@ -193,6 +194,8 @@ document.getElementById('sizeSlider').onchange();
             }
             rawValue = value;
             prevX = e.clientX;
+            this.addEventListener('touchmove', onDrag, true);
+            this.addEventListener('touchend', onDragEnd, true);
             this.addEventListener('mousemove', onDrag, true);
             this.addEventListener('mouseup', onDragEnd, true);
         }
@@ -209,6 +212,8 @@ document.getElementById('sizeSlider').onchange();
         }
 
         function onDragEnd() {
+            this.removeEventListener('touchmove', onDrag, true);
+            this.removeEventListener('touchend', onDragEnd, true);
             this.removeEventListener('mousemove', onDrag, true);
             this.removeEventListener('mouseup', onDragEnd, true);
         }

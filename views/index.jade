@@ -13,7 +13,8 @@ block content
     <h4>Line Thickness</h4>
     ul#size
       li <input id="sizeSlider" type="range" min="1" max="100" value="10" />
-      <li id="sizeValue">10</li>
+      <li><input type="text" value="10" id="sizeValue" /></li>
+      li 1-100 - If your device doesn't support the slider, please enter an exact value and press the enter or return key
 
 block footerScripts
     script(defer, src='js/canvas.js')

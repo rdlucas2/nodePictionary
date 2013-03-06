@@ -38,9 +38,17 @@ server.error(function(err, req, res, next){
 server.listen( port);
 
 //Setup Socket.IO
+var userlist = {};
 var io = io.listen(server);
 io.sockets.on('connection', function(socket){
   console.log('Client Connected');
+
+  socket.on('userId', function(data){
+    userlist[socket.id] = data;
+    console.log(userlist);
+    socket.broadcast.emit('userList', userlist);
+    socket.emit('userList', userlist);
+  });
 
   socket.on('drawStart', function(data){
       socket.broadcast.emit('drawStarted',data);
@@ -63,15 +71,29 @@ io.sockets.on('connection', function(socket){
   });
 
   socket.on('sizeChange', function(data){
+      //VALIDATE THAT SIZE IS BETWEEN 1-100
+      if (data > 100 || data < 1 || !isInt(parseInt(data))) {
+          data = 10;
+      }
+
       socket.broadcast.emit('sizeChanged',data);
       socket.emit('sizeChanged',data);
   });
 
   socket.on('disconnect', function(){
     console.log('Client Disconnected.');
+    delete userlist[socket.id];
+    console.log(userlist);
   });
 });
 
+///////////////////////////////////////////
+//              Helpers                  //
+///////////////////////////////////////////
+
+function isInt(n) {
+    return typeof n === 'number' && n % 1 == 0;
+}
 
 ///////////////////////////////////////////
 //              Routes                   //

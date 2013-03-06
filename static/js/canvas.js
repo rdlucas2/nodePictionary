@@ -15,7 +15,16 @@ $(document).ready(function() {
     var prevy;
     var fillColor = "#000000";
     var radius = 10;
-    console.log(pressed);
+    var userlist = {};
+    var userId = Math.round((new Date().getTime() / 1000)*Math.random());
+
+    //give the client a unique id
+    socket.emit('userId', userId);
+
+    socket.on('userList', function(data){
+        userlist = data;
+        console.log(userlist);
+    });
 
     // prevent elastic scrolling on mobile/touch
     document.body.addEventListener('touchmove',function(event){
@@ -37,8 +46,6 @@ $(document).ready(function() {
     }
 
     function draw(moves){
-        console.log(pressed);
-        if(pressed){
             context.strokeStyle = fillColor;
             context.lineWidth = radius;
             context.lineCap = 'round';
@@ -54,7 +61,6 @@ $(document).ready(function() {
         context.stroke();
         prevx = moves['x'];
         prevy = moves['y'];
-        }
     }
 
     $('body').bind('onload', initCanvas());
@@ -80,7 +86,6 @@ $(document).ready(function() {
             y = event.targetTouches[0].pageY;
         }
         pressed = true;
-        console.log(pressed);
         socket.emit('pressStatus', pressed)
         prevx = x;
         prevy = y;
@@ -106,13 +111,10 @@ $(document).ready(function() {
     $('#canvas').bind('touchend mouseup mouseleave', function(e){
         pressed = false;
         socket.emit('pressStatus', pressed);
-        console.log(pressed);
     });
 
     //get pressed status for everyone (Someone is or isn't drawing)
     socket.on('pressed', function(data){
-        console.log(pressed);
-        console.log(data);
         prevx = null;
         prevy = null;
         pressed = data;
@@ -139,9 +141,17 @@ $(document).ready(function() {
 
     socket.on('sizeChanged', function(data){
         $('#sizeSlider').val(data);
-        $("#sizeValue").text(data);
+        $("#sizeValue").val(data);
         radius = data;
     });
+
+    $('#sizeValue').on('keydown', function(e){
+        if(e.keyCode == 13) {
+            radius = $('#sizeValue').val();
+            socket.emit('sizeChange', radius);
+        }
+    });
+
     //******************************************************************************************
 
 });
